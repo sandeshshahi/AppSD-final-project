@@ -28,6 +28,12 @@ async function bootstrap() {
     const server = new ApolloServer({ typeDefs, resolvers });
     await server.start();
 
+    app.get("/", (req, res) => {
+      res.send(
+        "<h1> Welcome to the Enterprise ADS Dental Surgery API</h1><p>Go to <a href='/graphql'>/graphql</a> to access the API Sandbox.</p>",
+      );
+    });
+
     // 4. Mount GraphQL Endpoint
     app.use(
       "/graphql",
