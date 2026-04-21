@@ -1,4 +1,5 @@
 import { authResolvers } from "../../modules/auth/auth.resolver";
+import { billingResolvers } from "../../modules/billing/billing.resolver";
 import { patientResolvers } from "../../modules/patient/patient.resolver";
 
 export const typeDefs = `#graphql
@@ -34,11 +35,7 @@ export const typeDefs = `#graphql
     address: AddressInput!
   }
 
-  type Query {
-    healthCheck: String!
-    getAllPatients: [Patient]
-    getPatientById(id: ID!): Patient
-  }
+  
 
   type AuthPayload {
     token: String!
@@ -51,9 +48,24 @@ export const typeDefs = `#graphql
     role: String!
   }
 
+  type Invoice {
+    id: ID!
+    amount: Float!
+    status: String!
+    issueDate: String!
+  }
+
+  type Query {
+    healthCheck: String!
+    getAllPatients: [Patient]
+    getPatientById(id: ID!): Patient
+    myInvoices: [Invoice]
+  }
+
   type Mutation {
     registerPatient(input: CreatePatientInput!): Patient
     login(email: String!, password: String!): AuthPayload
+    payInvoice(invoiceId: ID!): Invoice
   }
 
   
@@ -66,10 +78,12 @@ export const resolvers = {
 
     // "spread" all the Patient queries into this main Query object
     ...patientResolvers.Query,
+    ...billingResolvers.Query,
   },
   Mutation: {
     // "spread" all the Patient mutations into this main Mutation object
     ...patientResolvers.Mutation,
     ...authResolvers.Mutation,
+    ...billingResolvers.Mutation,
   },
 };
