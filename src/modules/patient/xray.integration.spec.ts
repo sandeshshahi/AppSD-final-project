@@ -17,6 +17,12 @@ describe("X-Ray Feature & Security Integration", () => {
   let otherPatient: Patient;
 
   beforeAll(async () => {
+    // THE CI FIX: Dynamically convert the MySQL config to an in-memory SQLite config
+    const dbOptions = AppDataSource.options as any;
+    dbOptions.type = "sqlite";
+    dbOptions.database = ":memory:";
+    dbOptions.synchronize = true;
+
     // Initialize the REAL database to perfectly match how your app runs
     if (!AppDataSource.isInitialized) {
       await AppDataSource.initialize();
