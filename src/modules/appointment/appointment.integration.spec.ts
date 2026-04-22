@@ -5,7 +5,14 @@ import { Patient } from "../patient/patient.entity";
 import { Dentist } from "../dentist/dentist.entity";
 import { Surgery } from "../surgery/surgery.entity";
 import { Invoice } from "../billing/invoice.entity";
-import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+import { describe, it, expect, beforeAll, afterAll, jest } from "@jest/globals";
+import * as mailerUtils from "../../core/utils/mailer";
+
+jest.mock("../../core/utils/mailer", () => ({
+  sendBookingEmail: jest
+    .fn()
+    .mockImplementation(() => Promise.resolve({ messageId: "test-id" })),
+}));
 
 describe("Integration Test: Smart Scheduling Engine", () => {
   let testDataSource: DataSource;
@@ -147,5 +154,36 @@ describe("Integration Test: Smart Scheduling Engine", () => {
     ).rejects.toThrow(
       "Action blocked: Patient has outstanding unpaid invoices.",
     );
+  });
+
+  describe("Appointment Email Trigger", () => {
+    it("should trigger sendBookingEmail when an appointment is booked", async () => {
+      // Cast the function for TypeScript
+      const mockedSendEmail = jest.mocked(mailerUtils.sendBookingEmail);
+
+      // Define what it should return
+      mockedSendEmail.mockResolvedValue({ messageId: "test-id" } as any);
+
+      //  Execute the actual booking logic
+      await appointmentService.bookAppointment(
+        patientA.id,
+        testDentist.id,
+        testSurgery.id,
+        "2026-11-20",
+        "09:00:00",
+      );
+
+      //  Verification
+      expect(mockedSendEmail).toHaveBeenCalled();
+      expect(mockedSendEmail).toHaveBeenCalledWith(
+        patientA.email,
+        patientA.firstName,
+        expect.objectContaining({
+          date: "2026-11-20",
+          time: "09:00:00",
+          dentistName: "Stephen Strange",
+        }),
+      );
+    });
   });
 });

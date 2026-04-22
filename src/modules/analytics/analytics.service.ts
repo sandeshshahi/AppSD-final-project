@@ -1,11 +1,14 @@
+import { DataSource } from "typeorm";
 import { AppDataSource } from "../../config/database";
 import { Appointment } from "../appointment/appointment.entity";
 import { Invoice } from "../billing/invoice.entity";
 
 export class AnalyticsService {
+  constructor(private dataSource: DataSource = AppDataSource) {}
+
   async getClinicStats() {
-    const appointmentRepo = AppDataSource.getRepository(Appointment);
-    const invoiceRepo = AppDataSource.getRepository(Invoice);
+    const appointmentRepo = this.dataSource.getRepository(Appointment);
+    const invoiceRepo = this.dataSource.getRepository(Invoice);
 
     // Total Appointments
     const totalAppointments = await appointmentRepo.count();
