@@ -9,6 +9,7 @@ import { Dentist } from "../dentist/dentist.entity";
 import { Surgery } from "../surgery/surgery.entity";
 import { Invoice } from "../billing/invoice.entity";
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+import { XRay } from "../patient/xray.entity";
 
 describe("Integration Test: Authentication Service", () => {
   let testDataSource: DataSource;
@@ -19,7 +20,7 @@ describe("Integration Test: Authentication Service", () => {
       type: "sqlite",
       database: ":memory:",
       dropSchema: true,
-      entities: [User, Patient, Appointment, Dentist, Surgery, Invoice],
+      entities: [User, Patient, Appointment, Dentist, Surgery, Invoice, XRay],
       synchronize: true,
       logging: false,
     });

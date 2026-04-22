@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
 import { Patient } from "./patient.entity";
+import { CreateDateColumn } from "typeorm";
 
 @Entity("xrays")
 export class XRay {
@@ -12,7 +13,7 @@ export class XRay {
   @Column({ type: "varchar" })
   publicId!: string; // Cloudinary's reference to delete it later
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @CreateDateColumn()
   uploadedAt!: Date;
 
   @Column({ type: "text", nullable: true })

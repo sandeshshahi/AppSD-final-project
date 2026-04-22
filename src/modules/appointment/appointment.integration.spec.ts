@@ -7,6 +7,7 @@ import { Surgery } from "../surgery/surgery.entity";
 import { Invoice } from "../billing/invoice.entity";
 import { describe, it, expect, beforeAll, afterAll, jest } from "@jest/globals";
 import * as mailerUtils from "../../core/utils/mailer";
+import { XRay } from "../patient/xray.entity";
 
 jest.mock("../../core/utils/mailer", () => ({
   sendBookingEmail: jest
@@ -28,7 +29,7 @@ describe("Integration Test: Smart Scheduling Engine", () => {
       type: "sqlite",
       database: ":memory:",
       dropSchema: true,
-      entities: [Patient, Dentist, Surgery, Appointment, Invoice],
+      entities: [Patient, Dentist, Surgery, Appointment, Invoice, XRay],
       synchronize: true,
       logging: false,
     });

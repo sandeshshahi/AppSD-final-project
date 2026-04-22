@@ -7,6 +7,7 @@ import { Patient } from "../patient/patient.entity";
 import { Surgery } from "../surgery/surgery.entity";
 import { User } from "../auth/user.entity";
 import { describe, it, expect, beforeAll, afterAll, jest } from "@jest/globals";
+import { XRay } from "../patient/xray.entity";
 
 describe("Analytics Service", () => {
   let testDataSource: DataSource;
@@ -16,7 +17,7 @@ describe("Analytics Service", () => {
     testDataSource = new DataSource({
       type: "sqlite",
       database: ":memory:",
-      entities: [Appointment, Invoice, Dentist, Patient, Surgery, User],
+      entities: [Appointment, Invoice, Dentist, Patient, Surgery, User, XRay],
       synchronize: true,
     });
     await testDataSource.initialize();

@@ -6,6 +6,7 @@ import { Appointment } from "../appointment/appointment.entity";
 import { Dentist } from "../dentist/dentist.entity";
 import { Surgery } from "../surgery/surgery.entity";
 import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
+import { XRay } from "../patient/xray.entity";
 
 describe("Integration Test: Billing Service", () => {
   let testDataSource: DataSource;
@@ -17,7 +18,7 @@ describe("Integration Test: Billing Service", () => {
       type: "sqlite",
       database: ":memory:",
       dropSchema: true,
-      entities: [Patient, Invoice, Appointment, Dentist, Surgery],
+      entities: [Patient, Invoice, Appointment, Dentist, Surgery, XRay],
       synchronize: true,
       logging: false,
     });
