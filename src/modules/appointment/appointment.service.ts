@@ -15,13 +15,14 @@ export class AppointmentService {
   // Bring in the Billing Service to enforce Unpaid Bill Check
   private billingService = new BillingService();
 
+  // Add appointmentTime to the signature
   async bookAppointment(
     patientId: number,
     dentistId: number,
     surgeryId: number,
     appointmentDate: string,
+    appointmentTime: string,
   ) {
-    // The Unpaid Bill Check
     const hasUnpaidBills =
       await this.billingService.hasUnpaidInvoices(patientId);
     if (hasUnpaidBills) {
@@ -33,9 +34,9 @@ export class AppointmentService {
       );
     }
 
-    // Dentist Double-Booking Check
+    // Check for Dentist double-booking using BOTH date and time
     const dentistConflict = await this.appointmentRepo.findOne({
-      where: { dentist: { id: dentistId }, appointmentDate },
+      where: { dentist: { id: dentistId }, appointmentDate, appointmentTime },
     });
     if (dentistConflict) {
       throw new GraphQLError(
@@ -43,9 +44,9 @@ export class AppointmentService {
       );
     }
 
-    // Surgery Room Double-Booking Check
+    // Check for Surgery double-booking using BOTH date and time
     const surgeryConflict = await this.appointmentRepo.findOne({
-      where: { surgery: { id: surgeryId }, appointmentDate },
+      where: { surgery: { id: surgeryId }, appointmentDate, appointmentTime },
     });
     if (surgeryConflict) {
       throw new GraphQLError(
@@ -53,7 +54,6 @@ export class AppointmentService {
       );
     }
 
-    // Fetch the actual entities to link them
     const patient = await this.patientRepo.findOneBy({ id: patientId });
     const dentist = await this.dentistRepo.findOneBy({ id: dentistId });
     const surgery = await this.surgeryRepo.findOneBy({ id: surgeryId });
@@ -64,9 +64,10 @@ export class AppointmentService {
       );
     }
 
-    // If all checks pass, create the appointment!
+    // Save the time to the database!
     const appointment = this.appointmentRepo.create({
       appointmentDate,
+      appointmentTime, // <-- ADDED THIS
       status: "SCHEDULED",
       patient,
       dentist,

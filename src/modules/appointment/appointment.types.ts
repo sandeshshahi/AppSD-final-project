@@ -16,6 +16,7 @@ export const appointmentTypeDefs = `#graphql
   type Appointment {
       id: ID!
       appointmentDate: String!
+      appointmentTime: String!
       status: String!
       patient: Patient
       dentist: Dentist
@@ -27,6 +28,7 @@ export const appointmentTypeDefs = `#graphql
       dentistId: ID!
       surgeryId: ID!
       appointmentDate: String!
+      appointmentTime: String!
   }
 
   extend type Query {

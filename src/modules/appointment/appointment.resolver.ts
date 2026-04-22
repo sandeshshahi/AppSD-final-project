@@ -25,6 +25,7 @@ export const appointmentResolvers = {
         parseInt(input.dentistId),
         parseInt(input.surgeryId),
         input.appointmentDate,
+        input.appointmentTime,
       );
     },
   },

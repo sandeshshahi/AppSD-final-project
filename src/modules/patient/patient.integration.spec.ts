@@ -5,6 +5,7 @@ import { Appointment } from "../appointment/appointment.entity";
 import { Invoice } from "../billing/invoice.entity";
 import { Dentist } from "../dentist/dentist.entity";
 import { Surgery } from "../surgery/surgery.entity";
+import { describe, it, expect, beforeAll, afterAll } from "@jest/globals";
 
 describe("Integration Test: Patient Service & Database", () => {
   let testDataSource: DataSource;
