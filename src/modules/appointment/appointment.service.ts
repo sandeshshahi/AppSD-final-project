@@ -9,6 +9,7 @@ import {
   ConflictError,
   NotFoundError,
 } from "../../core/errors/app.errors";
+import { sendBookingEmail } from "../../core/utils/mailer";
 
 export class AppointmentService {
   private appointmentRepo = AppDataSource.getRepository(Appointment);
@@ -64,7 +65,17 @@ export class AppointmentService {
       surgery,
     });
 
-    return await this.appointmentRepo.save(appointment);
+    // 1. Save the appointment
+    const savedAppointment = await this.appointmentRepo.save(appointment);
+
+    // 2. TRIGGER THE EMAIL (Don't await it so the API stays fast!)
+    sendBookingEmail(patient.email, patient.firstName, {
+      date: appointmentDate,
+      time: appointmentTime,
+      dentistName: `${dentist.firstName} ${dentist.lastName}`,
+    }).catch((err) => console.error("Email failed to send:", err));
+
+    return savedAppointment;
   }
 
   async getAllAppointments() {
