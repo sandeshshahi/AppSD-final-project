@@ -3,110 +3,33 @@ import { authResolvers } from "../../modules/auth/auth.resolver";
 import { billingResolvers } from "../../modules/billing/billing.resolver";
 import { patientResolvers } from "../../modules/patient/patient.resolver";
 
-export const typeDefs = `#graphql
-  type Address {
-    street: String
-    city: String
-    zipCode: String
-  }
+import { patientTypeDefs } from "../../modules/patient/patient.types";
+import { authTypeDefs } from "../../modules/auth/auth.types";
+import { billingTypeDefs } from "../../modules/billing/billing.types";
+import { appointmentTypeDefs } from "../../modules/appointment/appointment.types";
 
-  type Patient {
-    id: ID!
-    firstName: String!
-    lastName: String!
-    contactPhone: String
-    email: String!
-    dateOfBirth: String
-    address: Address
-    createdAt: String
-  }
-
-  input AddressInput {
-    street: String
-    city: String
-    zipCode: String
-  }
-
-  input CreatePatientInput {
-    firstName: String!
-    lastName: String!
-    contactPhone: String
-    email: String!
-    dateOfBirth: String
-    address: AddressInput!
-  }
-
-  
-
-  type AuthPayload {
-    token: String!
-    user: AuthUser!
-  }
-
-  type AuthUser {
-    id: ID!
-    email: String!
-    role: String!
-  }
-
-  type Invoice {
-    id: ID!
-    amount: Float!
-    status: String!
-    issueDate: String!
-  }
-
-  type Dentist {
-    id: ID!
-    firstName: String!
-    lastName: String!
-    specialization: String!
-  }
-
-  type Surgery {
-    id: ID!
-    name: String!
-    location: String!
-  }
-
-  type Appointment {
-    id: ID!
-    appointmentDate: String!
-    status: String!
-    patient: Patient
-    dentist: Dentist
-    surgery: Surgery
-  }
-
-  input BookAppointmentInput {
-    patientId: ID!
-    dentistId: ID!
-    surgeryId: ID!
-    appointmentDate: String!
-  }
-
+const baseTypeDefs = `#graphql
   type Query {
     healthCheck: String!
-    getAllPatients: [Patient]
-    getPatientById(id: ID!): Patient
-    myInvoices: [Invoice]
-    getAllAppointments: [Appointment]
   }
 
   type Mutation {
-    registerPatient(input: CreatePatientInput!): Patient
-    login(email: String!, password: String!): AuthPayload
-    payInvoice(invoiceId: ID!): Invoice
-    bookAppointment(input: BookAppointmentInput!): Appointment
-  }
-
-  
+    _empty: String  
+  } 
 `;
+
+export const typeDefs = [
+  baseTypeDefs,
+  patientTypeDefs,
+  authTypeDefs,
+  billingTypeDefs,
+  appointmentTypeDefs,
+];
 
 // Merge all our different module resolvers!
 export const resolvers = {
   Query: {
-    healthCheck: () => "🚀 Enterprise ADS Dental Surgery API is online!",
+    healthCheck: () => "Enterprise ADS Dental Surgery API is online!",
 
     // "spread" all the Patient queries into this main Query object
     ...patientResolvers.Query,
