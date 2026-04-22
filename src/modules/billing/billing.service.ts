@@ -1,6 +1,6 @@
 import { AppDataSource } from "../../config/database";
+import { BadRequestError, NotFoundError } from "../../core/errors/app.errors";
 import { Invoice } from "./invoice.entity";
-import { GraphQLError } from "graphql";
 
 export class BillingService {
   private invoiceRepo = AppDataSource.getRepository(Invoice);
@@ -28,11 +28,9 @@ export class BillingService {
   // Pay a bill
   async payInvoice(invoiceId: number) {
     const invoice = await this.invoiceRepo.findOneBy({ id: invoiceId });
-    if (!invoice) {
-      throw new GraphQLError(`Invoice ${invoiceId} not found.`);
-    }
+    if (!invoice) throw new NotFoundError("Invoice", invoiceId);
     if (invoice.status === "PAID") {
-      throw new GraphQLError(`Invoice ${invoiceId} is already paid.`);
+      throw new BadRequestError(`Invoice ${invoiceId} is already paid.`);
     }
 
     invoice.status = "PAID";

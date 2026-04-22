@@ -4,7 +4,11 @@ import { Patient } from "../patient/patient.entity";
 import { Dentist } from "../dentist/dentist.entity";
 import { Surgery } from "../surgery/surgery.entity";
 import { BillingService } from "../billing/billing.service";
-import { GraphQLError } from "graphql";
+import {
+  UnpaidBillError,
+  ConflictError,
+  NotFoundError,
+} from "../../core/errors/app.errors";
 
 export class AppointmentService {
   private appointmentRepo = AppDataSource.getRepository(Appointment);
@@ -25,49 +29,35 @@ export class AppointmentService {
   ) {
     const hasUnpaidBills =
       await this.billingService.hasUnpaidInvoices(patientId);
-    if (hasUnpaidBills) {
-      throw new GraphQLError(
-        "Patient has outstanding unpaid bills. Cannot book a new appointment.",
-        {
-          extensions: { code: "FORBIDDEN", http: { status: 403 } },
-        },
-      );
-    }
+    if (hasUnpaidBills) throw new UnpaidBillError();
 
     // Check for Dentist double-booking using BOTH date and time
     const dentistConflict = await this.appointmentRepo.findOne({
       where: { dentist: { id: dentistId }, appointmentDate, appointmentTime },
     });
-    if (dentistConflict) {
-      throw new GraphQLError(
-        "The selected Dentist is already booked at this specific time.",
-      );
-    }
+    if (dentistConflict) throw new ConflictError("Dentist is already booked.");
 
     // Check for Surgery double-booking using BOTH date and time
     const surgeryConflict = await this.appointmentRepo.findOne({
       where: { surgery: { id: surgeryId }, appointmentDate, appointmentTime },
     });
-    if (surgeryConflict) {
-      throw new GraphQLError(
+    if (surgeryConflict)
+      throw new ConflictError(
         "The selected Surgery Room is already occupied at this time.",
       );
-    }
 
     const patient = await this.patientRepo.findOneBy({ id: patientId });
     const dentist = await this.dentistRepo.findOneBy({ id: dentistId });
     const surgery = await this.surgeryRepo.findOneBy({ id: surgeryId });
 
-    if (!patient || !dentist || !surgery) {
-      throw new GraphQLError(
-        "Invalid Patient, Dentist, or Surgery ID provided.",
-      );
-    }
+    if (!patient) throw new NotFoundError("Patient", patientId);
+    if (!dentist) throw new NotFoundError("Dentist", dentistId);
+    if (!surgery) throw new NotFoundError("Surgery", surgeryId);
 
     // Save the time to the database!
     const appointment = this.appointmentRepo.create({
       appointmentDate,
-      appointmentTime, // <-- ADDED THIS
+      appointmentTime,
       status: "SCHEDULED",
       patient,
       dentist,

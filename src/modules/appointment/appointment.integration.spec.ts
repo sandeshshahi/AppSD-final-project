@@ -105,9 +105,7 @@ describe("Integration Test: Smart Scheduling Engine", () => {
         "2026-10-15",
         "10:00:00",
       ),
-    ).rejects.toThrow(
-      "The selected Dentist is already booked at this specific time.",
-    );
+    ).rejects.toThrow("Dentist is already booked.");
   });
 
   it("should FAIL to book if the patient has an unpaid bill", async () => {
@@ -121,7 +119,33 @@ describe("Integration Test: Smart Scheduling Engine", () => {
         "14:00:00",
       ),
     ).rejects.toThrow(
-      "Patient has outstanding unpaid bills. Cannot book a new appointment.",
+      "Action blocked: Patient has outstanding unpaid invoices.",
+    );
+  });
+
+  it("should FAIL to book if the dentist is already booked at that exact time", async () => {
+    await expect(
+      appointmentService.bookAppointment(
+        patientA.id,
+        testDentist.id,
+        testSurgery.id,
+        "2026-10-15",
+        "10:00:00",
+      ),
+    ).rejects.toThrow("Dentist is already booked.");
+  });
+
+  it("should FAIL to book if the patient has an unpaid bill", async () => {
+    await expect(
+      appointmentService.bookAppointment(
+        patientB.id,
+        testDentist.id,
+        testSurgery.id,
+        "2026-10-16",
+        "14:00:00",
+      ),
+    ).rejects.toThrow(
+      "Action blocked: Patient has outstanding unpaid invoices.",
     );
   });
 });

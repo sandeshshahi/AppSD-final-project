@@ -1,3 +1,4 @@
+import { isAuthenticated } from "../../core/middleware/auth.guard";
 import { AppointmentService } from "./appointment.service";
 import { GraphQLError } from "graphql";
 
@@ -15,10 +16,7 @@ export const appointmentResolvers = {
   },
   Mutation: {
     bookAppointment: async (_: any, { input }: any, context: any) => {
-      if (!context.user)
-        throw new GraphQLError("Unauthorized", {
-          extensions: { code: "UNAUTHENTICATED" },
-        });
+      isAuthenticated(context);
 
       return await appointmentService.bookAppointment(
         parseInt(input.patientId),

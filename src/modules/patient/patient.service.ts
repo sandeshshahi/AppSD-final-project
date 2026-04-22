@@ -1,7 +1,7 @@
 import { AppDataSource } from "../../config/database";
 import { Patient } from "./patient.entity";
 import { CreatePatientDTO } from "./patient.dto";
-import { GraphQLError } from "graphql";
+import { BadRequestError, NotFoundError } from "../../core/errors/app.errors";
 
 export class PatientService {
   private patientRepo = AppDataSource.getRepository(Patient);
@@ -13,9 +13,7 @@ export class PatientService {
   async getPatientById(id: number) {
     const patient = await this.patientRepo.findOneBy({ id });
     if (!patient) {
-      throw new GraphQLError(`Patient with ID ${id} not found.`, {
-        extensions: { code: "NOT_FOUND", http: { status: 404 } },
-      });
+      throw new NotFoundError(`Patient with ID ${id} not found.`);
     }
     return patient;
   }
@@ -26,11 +24,8 @@ export class PatientService {
       email: data.email,
     });
     if (existingPatient) {
-      throw new GraphQLError(
+      throw new BadRequestError(
         `A patient with email ${data.email} already exists.`,
-        {
-          extensions: { code: "BAD_REQUEST", http: { status: 400 } },
-        },
       );
     }
 
