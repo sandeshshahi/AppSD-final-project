@@ -1,8 +1,23 @@
-import { AppDataSource } from "../../config/database";
-import { patientResolvers } from "./patient.resolver";
-import { Patient } from "./patient.entity";
-import { ForbiddenError } from "../../core/errors/app.errors";
-import { describe, it, expect, beforeAll, afterAll, jest } from "@jest/globals";
+// MOCK INTERCEPTOR
+jest.mock("../../config/database", () => {
+  const { DataSource } = require("typeorm");
+  return {
+    AppDataSource: new DataSource({
+      type: "sqlite",
+      database: ":memory:",
+      synchronize: true,
+      entities: [
+        require("./patient.entity").Patient,
+        require("./xray.entity").XRay,
+        require("../auth/user.entity").User,
+        require("../appointment/appointment.entity").Appointment,
+        require("../dentist/dentist.entity").Dentist,
+        require("../surgery/surgery.entity").Surgery,
+        require("../billing/invoice.entity").Invoice,
+      ],
+    }),
+  };
+});
 
 // Mock Cloudinary API
 jest.mock("../../core/utils/cloudinary", () => ({
@@ -12,16 +27,22 @@ jest.mock("../../core/utils/cloudinary", () => ({
   })),
 }));
 
+import { AppDataSource } from "../../config/database";
+import { patientResolvers } from "./patient.resolver";
+import { Patient } from "./patient.entity";
+import { ForbiddenError } from "../../core/errors/app.errors";
+import { describe, it, expect, beforeAll, afterAll, jest } from "@jest/globals";
+
 describe("X-Ray Feature & Security Integration", () => {
   let testPatient: Patient;
   let otherPatient: Patient;
 
   beforeAll(async () => {
-    // THE CI FIX: Dynamically convert the MySQL config to an in-memory SQLite config
-    const dbOptions = AppDataSource.options as any;
-    dbOptions.type = "sqlite";
-    dbOptions.database = ":memory:";
-    dbOptions.synchronize = true;
+    // // THE CI FIX: Dynamically convert the MySQL config to an in-memory SQLite config
+    // const dbOptions = AppDataSource.options as any;
+    // dbOptions.type = "sqlite";
+    // dbOptions.database = ":memory:";
+    // dbOptions.synchronize = true;
 
     // Initialize the REAL database to perfectly match how your app runs
     if (!AppDataSource.isInitialized) {
