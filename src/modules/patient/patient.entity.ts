@@ -7,6 +7,7 @@ import {
 } from "typeorm";
 import { Appointment } from "../appointment/appointment.entity";
 import { Invoice } from "../billing/invoice.entity";
+import { XRay } from "./xray.entity";
 
 // Embedded Class: This stores address fields directly in the Patient table
 export class Address {
@@ -52,4 +53,7 @@ export class Patient {
 
   @CreateDateColumn()
   createdAt!: Date;
+
+  @OneToMany(() => XRay, (xray) => xray.patient)
+  xrays!: XRay[];
 }

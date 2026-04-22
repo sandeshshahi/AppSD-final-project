@@ -7,6 +7,8 @@ export const authTypeDefs = `#graphql
   type AuthUser {
     id: ID!
     email: String!
+    firstName: String    
+    lastName: String
     role: String!
   }
 
@@ -20,7 +22,7 @@ export const authTypeDefs = `#graphql
 
   extend type Mutation {
     login(email: String!, password: String!): AuthPayload
-    
+
     signUp(input: SignUpInput!): Patient
   }
 `;

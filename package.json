@@ -18,6 +18,7 @@
     "bcryptjs": "^3.0.3",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "cloudinary": "^2.9.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
@@ -27,6 +28,7 @@
     "nodemailer": "^8.0.5",
     "pg": "^8.20.0",
     "reflect-metadata": "^0.2.2",
+    "streamifier": "^0.1.1",
     "typeorm": "^0.3.28"
   },
   "devDependencies": {
@@ -37,6 +39,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.6.0",
     "@types/nodemailer": "^8.0.0",
+    "@types/streamifier": "^0.1.2",
     "@types/supertest": "^7.2.0",
     "jest": "^30.3.0",
     "sqlite3": "^5.1.7",

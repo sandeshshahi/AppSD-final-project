@@ -8,7 +8,8 @@ export const authResolvers = {
       return await authService.signUpPatient(input);
     },
     login: async (_: any, { email, password }: any) => {
-      return authService.login(email, password);
+      const result = await authService.login(email, password);
+      return { token: result.token, user: result.user };
     },
   },
 };

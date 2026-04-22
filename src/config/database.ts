@@ -7,6 +7,7 @@ import { Surgery } from "../modules/surgery/surgery.entity";
 import { Appointment } from "../modules/appointment/appointment.entity";
 import { Invoice } from "../modules/billing/invoice.entity";
 import { User } from "../modules/auth/user.entity";
+import { XRay } from "../modules/patient/xray.entity";
 
 // Check if we have a cloud database URL provided by Render
 const isProduction = !!process.env.DATABASE_URL;
@@ -29,7 +30,7 @@ export const AppDataSource = new DataSource({
 
   synchronize: true, // ⚠️ Auto-creates/updates tables based on entities!
   logging: false,
-  entities: [User, Patient, Dentist, Surgery, Appointment, Invoice],
+  entities: [User, Patient, Dentist, Surgery, Appointment, Invoice, XRay],
 
   // Required for some cloud databases to connect securely
   ssl: isProduction ? { rejectUnauthorized: false } : false,
