@@ -48,8 +48,10 @@ async function bootstrap() {
                 process.env.JWT_SECRET || "fallback_secret",
               );
               return { user: decoded }; // passes the user to every resolver!
-            } catch (err) {
-              console.log("Invalid token");
+            } catch (err: any) {
+              // console.log("Invalid token");
+              console.log("Received Token:", token);
+              console.log("JWT Error:", err.message);
             }
           }
           return { user: null }; // Not logged in
