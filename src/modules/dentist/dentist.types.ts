@@ -18,6 +18,7 @@ export const dentistTypeDefs = `#graphql
   extend type Query {
     getDentists: [Dentist!]!
     getDentist(id: ID!): Dentist
+    getPatientsForDentist(dentistId: ID!): [Patient!]!
   }
 
   extend type Mutation {

@@ -7,6 +7,7 @@ import {
   InvalidCredentialsError,
 } from "../../core/errors/app.errors";
 import { Patient } from "../patient/patient.entity";
+import { Dentist } from "../dentist/dentist.entity";
 
 export class AuthService {
   private userRepo = AppDataSource.getRepository(User);
@@ -33,27 +34,43 @@ export class AuthService {
     if (existingUser)
       throw new BadRequestError("A user with this email already exists.");
 
-    return await this.userRepo.manager.transaction(async (manager) => {
-      // Create the Patient (Medical Profile)
+    const result = await this.userRepo.manager.transaction(async (manager) => {
       const patient = manager.create(Patient, {
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         contactPhone: data.contactPhone,
       });
-      await manager.save(patient);
+      const savedPatient = await manager.save(patient);
 
-      // Create the User (Auth Credentials)
       const hashedPassword = await bcrypt.hash(data.password, 10);
       const user = manager.create(User, {
         email: data.email,
         password: hashedPassword,
-        role: "PATIENT", // Force the role to PATIENT for public signups
+        role: "PATIENT",
       });
-      await manager.save(user);
+      const savedUser = await manager.save(user);
 
-      return patient;
+      // Generate token immediately so they are logged in after signup
+      const token = jwt.sign(
+        { userId: savedUser.id, email: savedUser.email, role: savedUser.role },
+        process.env.JWT_SECRET || "fallback_secret",
+        { expiresIn: "24h" },
+      );
+      // Return the shape AuthPayload expects
+      return {
+        token,
+        user: {
+          id: savedUser.id,
+          email: savedUser.email,
+          role: savedUser.role,
+          firstName: savedPatient.firstName,
+          lastName: savedPatient.lastName,
+        },
+      };
     });
+
+    return result;
   }
 
   async login(email: string, password: string) {
@@ -64,6 +81,23 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new InvalidCredentialsError();
 
+    let firstName = null;
+    let lastName = null;
+
+    if (user.role === "PATIENT") {
+      const patient = await AppDataSource.getRepository(Patient).findOneBy({
+        email,
+      });
+      firstName = patient?.firstName;
+      lastName = patient?.lastName;
+    } else if (user.role === "DENTIST") {
+      const dentist = await AppDataSource.getRepository(Dentist).findOneBy({
+        email,
+      });
+      firstName = dentist?.firstName;
+      lastName = dentist?.lastName;
+    }
+
     // Generate the Token!
     const token = jwt.sign(
       { userId: user.id, email: user.email, role: user.role },
@@ -71,6 +105,15 @@ export class AuthService {
       { expiresIn: "24h" },
     );
 
-    return { token, user };
+    return {
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        firstName,
+        lastName,
+      },
+    };
   }
 }

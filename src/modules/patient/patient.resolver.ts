@@ -4,7 +4,7 @@ import { uploadToCloudinary } from "../../core/utils/cloudinary";
 import { AppDataSource } from "../../config/database";
 import { XRay } from "./xray.entity";
 import { isAuthenticated } from "../../core/middleware/auth.guard";
-import { ForbiddenError } from "../../core/errors/app.errors";
+import { ForbiddenError, NotFoundError } from "../../core/errors/app.errors";
 import { Patient } from "./patient.entity";
 
 const patientService = new PatientService();
@@ -28,20 +28,17 @@ export const patientResolvers = {
 
       // If the user is a PATIENT, Ownership Check
       if (context.user.role === "PATIENT") {
-        // find the patient record that matches the LOGGED-IN user's email
         const patientRecord = await AppDataSource.getRepository(
           Patient,
         ).findOneBy({
           email: context.user.email,
         });
 
-        // If the ID they asked for doesn't match THEIR record, block them!
-        if (!patientRecord || patientRecord.id !== parseInt(patientId)) {
-          throw new ForbiddenError(
-            "You are not authorized to view these medical records.",
-          );
+        if (!patientRecord) {
+          throw new NotFoundError("Patient profile not found.");
         }
 
+        // Ignore the frontend `patientId` entirely. Use the real database ID!
         return await patientService.getXRaysByPatient(patientRecord.id);
       }
     },

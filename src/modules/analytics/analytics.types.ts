@@ -1,5 +1,6 @@
 export const analyticsTypeDefs = `#graphql
   type ClinicStats {
+    totalPatients: Int!
     totalAppointments: Int!
     totalRevenue: Float!
     unpaidInvoicesCount: Int!

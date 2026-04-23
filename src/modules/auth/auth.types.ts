@@ -23,6 +23,6 @@ export const authTypeDefs = `#graphql
   extend type Mutation {
     login(email: String!, password: String!): AuthPayload
 
-    signUp(input: SignUpInput!): Patient
+    signUp(input: SignUpInput!): AuthPayload
   }
 `;

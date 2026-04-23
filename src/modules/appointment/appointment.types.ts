@@ -21,6 +21,7 @@ export const appointmentTypeDefs = `#graphql
       patient: Patient
       dentist: Dentist
       surgery: Surgery
+      invoice: Invoice
   }
 
   input BookAppointmentInput {
@@ -33,6 +34,7 @@ export const appointmentTypeDefs = `#graphql
 
   extend type Query {
     getAllAppointments: [Appointment]
+    getPatientAppointments(patientId: ID!): [Appointment]
   }
 
   extend type Mutation {

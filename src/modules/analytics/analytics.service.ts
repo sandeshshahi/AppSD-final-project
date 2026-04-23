@@ -2,6 +2,7 @@ import { DataSource } from "typeorm";
 import { AppDataSource } from "../../config/database";
 import { Appointment } from "../appointment/appointment.entity";
 import { Invoice } from "../billing/invoice.entity";
+import { Patient } from "../patient/patient.entity";
 
 export class AnalyticsService {
   constructor(private dataSource: DataSource = AppDataSource) {}
@@ -9,14 +10,18 @@ export class AnalyticsService {
   async getClinicStats() {
     const appointmentRepo = this.dataSource.getRepository(Appointment);
     const invoiceRepo = this.dataSource.getRepository(Invoice);
+    const patientRepo = this.dataSource.getRepository(Patient);
 
     // Total Appointments
     const totalAppointments = await appointmentRepo.count();
+
+    const totalPatients = await patientRepo.count();
 
     // Total Revenue
     const revenueResult = await invoiceRepo
       .createQueryBuilder("invoice")
       .select("SUM(invoice.amount)", "sum")
+      .where("invoice.status = :status", { status: "PAID" })
       .getRawOne();
 
     const totalRevenue = parseFloat(revenueResult?.sum) || 0;
@@ -42,6 +47,7 @@ export class AnalyticsService {
       : "No appointments yet";
 
     return {
+      totalPatients,
       totalAppointments,
       totalRevenue,
       unpaidInvoicesCount: unpaidCount,

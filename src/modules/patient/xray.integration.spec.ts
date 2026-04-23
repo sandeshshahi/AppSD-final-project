@@ -122,7 +122,11 @@ describe("X-Ray Feature & Security Integration", () => {
   describe("Query: getPatientXRays", () => {
     it("should allow a PATIENT to view their OWN X-Rays", async () => {
       const mockContext = {
-        user: { role: "PATIENT", email: testPatient.email },
+        user: {
+          role: "PATIENT",
+          userId: testPatient.id,
+          email: testPatient.email,
+        },
       };
 
       const result = await patientResolvers.Query.getPatientXRays(
@@ -136,7 +140,11 @@ describe("X-Ray Feature & Security Integration", () => {
 
     it("should BLOCK a PATIENT from viewing ANOTHER patient's X-Rays", async () => {
       const mockContext = {
-        user: { role: "PATIENT", email: testPatient.email },
+        user: {
+          role: "PATIENT",
+          userId: testPatient.id,
+          email: testPatient.email,
+        },
       };
 
       await expect(

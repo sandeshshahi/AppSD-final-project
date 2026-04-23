@@ -48,6 +48,8 @@ export class AppointmentService {
       );
 
     const patient = await this.patientRepo.findOneBy({ id: patientId });
+    console.log("=== WHAT IS IN THE DB ===", patient);
+    if (!patient) throw new NotFoundError("Patient", patientId);
     const dentist = await this.dentistRepo.findOneBy({ id: dentistId });
     const surgery = await this.surgeryRepo.findOneBy({ id: surgeryId });
 
@@ -80,7 +82,15 @@ export class AppointmentService {
 
   async getAllAppointments() {
     return await this.appointmentRepo.find({
-      relations: ["patient", "dentist", "surgery"],
+      relations: ["patient", "dentist", "surgery", "invoice"],
+      order: { appointmentDate: "DESC", appointmentTime: "DESC" },
+    });
+  }
+
+  async getAppointmentsByPatient(patientId: number) {
+    return await this.appointmentRepo.find({
+      where: { patient: { id: patientId } },
+      relations: ["dentist", "surgery", "patient"], // Bring in related data
       order: { appointmentDate: "ASC" },
     });
   }

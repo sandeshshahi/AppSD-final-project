@@ -14,6 +14,7 @@ export const patientTypeDefs = `#graphql
     dateOfBirth: String
     address: Address
     createdAt: String
+    appointments: [Appointment]
   }
 
   input AddressInput {

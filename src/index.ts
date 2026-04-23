@@ -12,19 +12,20 @@ import { AuthService } from "./modules/auth/auth.service";
 
 async function bootstrap() {
   try {
-    // 1. Initialize MySQL Database
+    //  Initialize MySQL Database
     await AppDataSource.initialize();
     console.log("Database successfully connected!");
 
-    // 2. Initialize Express
+    //  Initialize Express
     const app = express();
     app.use(cors());
-    app.use(express.json());
+    app.use(express.json({ limit: "50mb" }));
+    app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
     const authService = new AuthService();
     await authService.seedAdmin();
 
-    // 3. Initialize Apollo GraphQL Server
+    //  Initialize Apollo GraphQL Server
     const server = new ApolloServer({ typeDefs, resolvers });
     await server.start();
 
@@ -34,9 +35,11 @@ async function bootstrap() {
       );
     });
 
-    // 4. Mount GraphQL Endpoint
+    //  Mount GraphQL Endpoint
     app.use(
       "/graphql",
+      cors(),
+      express.json({ limit: "50mb" }),
       expressMiddleware(server, {
         context: async ({ req }) => {
           const authHeader = req.headers.authorization || "";
@@ -59,7 +62,7 @@ async function bootstrap() {
       }),
     );
 
-    // 5. Start the Server
+    //  Start the Server
     const PORT = process.env.PORT || 8080;
     app.listen(PORT, () => {
       console.log(`Server ready at http://localhost:${PORT}/graphql`);

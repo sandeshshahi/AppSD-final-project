@@ -80,11 +80,13 @@ describe("Integration Test: Authentication Service", () => {
     };
 
     // 1. Run the signup service
-    const patient = await authService.signUpPatient(newPatientData);
+    const result = await authService.signUpPatient(newPatientData);
 
-    // 2. Verify the Patient profile was created
-    expect(patient).toBeDefined();
-    expect(patient.firstName).toBe("Clark");
+    // Verify the structure of the AuthPayload
+    expect(result).toBeDefined();
+    expect(result.token).toBeDefined();
+
+    expect(result.user.firstName).toBe("Clark");
 
     // 3. Verify the User login credentials were created with the PATIENT role!
     const userRepo = testDataSource.getRepository(User);

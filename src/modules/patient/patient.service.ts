@@ -38,7 +38,9 @@ export class PatientService {
   }
 
   async getAllPatients() {
-    return await this.patientRepo.find({ order: { lastName: "ASC" } });
+    return await this.patientRepo.find({
+      relations: ["appointments", "appointments.dentist"],
+    });
   }
 
   async getPatientById(id: number) {
