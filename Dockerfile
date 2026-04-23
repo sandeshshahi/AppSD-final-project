@@ -16,8 +16,8 @@ COPY . .
 # Compile the TypeScript into JavaScript!
 RUN npm run build
 
-# Expose the port your backend runs on (e.g., 4000)
-EXPOSE 4000
+# Expose the port your backend runs on (e.g., 8080)
+EXPOSE 8080
 
 # Tell the container how to start the app
 CMD ["npm", "start"]
