@@ -39,18 +39,14 @@ export const patientResolvers = {
           throw new NotFoundError("Patient profile not found.");
         }
 
-        const authUserId = context.user.id ? parseInt(context.user.id) : null;
-        const profileId = patientRecord.id;
-        const requestedId = parseInt(patientId);
-
-        if (requestedId !== authUserId && requestedId !== profileId) {
+        if (patientRecord.id !== parseInt(patientId)) {
           throw new GraphQLError(
             "Access Denied: You cannot view other patients' records.",
             { extensions: { code: "FORBIDDEN" } },
           );
         }
 
-        return await patientService.getXRaysByPatient(profileId);
+        return await patientService.getXRaysByPatient(patientRecord.id);
       }
     },
   },

@@ -61,7 +61,7 @@ export class AuthService {
       return {
         token,
         user: {
-          id: savedUser.id,
+          id: savedPatient.id,
           email: savedUser.email,
           role: savedUser.role,
           firstName: savedPatient.firstName,
@@ -81,6 +81,7 @@ export class AuthService {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) throw new InvalidCredentialsError();
 
+    let returnId = user.id;
     let firstName = null;
     let lastName = null;
 
@@ -88,14 +89,20 @@ export class AuthService {
       const patient = await AppDataSource.getRepository(Patient).findOneBy({
         email,
       });
-      firstName = patient?.firstName;
-      lastName = patient?.lastName;
+      if (patient) {
+        firstName = patient.firstName;
+        lastName = patient.lastName;
+        returnId = patient.id;
+      }
     } else if (user.role === "DENTIST") {
       const dentist = await AppDataSource.getRepository(Dentist).findOneBy({
         email,
       });
-      firstName = dentist?.firstName;
-      lastName = dentist?.lastName;
+      if (dentist) {
+        firstName = dentist.firstName;
+        lastName = dentist.lastName;
+        returnId = dentist.id;
+      }
     }
 
     // Generate the Token!
@@ -108,7 +115,7 @@ export class AuthService {
     return {
       token,
       user: {
-        id: user.id,
+        id: returnId,
         email: user.email,
         role: user.role,
         firstName,
