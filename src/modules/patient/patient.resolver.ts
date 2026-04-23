@@ -39,6 +39,15 @@ export const patientResolvers = {
           throw new NotFoundError("Patient profile not found.");
         }
 
+        if (patientRecord.id !== parseInt(patientId)) {
+          throw new GraphQLError(
+            "Access Denied: You cannot view other patients' records.",
+            {
+              extensions: { code: "FORBIDDEN" },
+            },
+          );
+        }
+
         // Ignore the frontend `patientId` entirely. Use the real database ID!
         return await patientService.getXRaysByPatient(patientRecord.id);
       }
