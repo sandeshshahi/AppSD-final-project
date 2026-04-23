@@ -153,7 +153,7 @@ describe("X-Ray Feature & Security Integration", () => {
           { patientId: otherPatient.id },
           mockContext,
         ),
-      ).rejects.toThrow(ForbiddenError);
+      ).rejects.toThrow(/Access Denied/);
     });
 
     it("should allow an OFFICE_MANAGER to view ANY patient's X-Rays", async () => {

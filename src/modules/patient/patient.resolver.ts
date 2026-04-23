@@ -6,6 +6,7 @@ import { XRay } from "./xray.entity";
 import { isAuthenticated } from "../../core/middleware/auth.guard";
 import { ForbiddenError, NotFoundError } from "../../core/errors/app.errors";
 import { Patient } from "./patient.entity";
+import { GraphQLError } from "graphql/error";
 
 const patientService = new PatientService();
 
@@ -36,6 +37,15 @@ export const patientResolvers = {
 
         if (!patientRecord) {
           throw new NotFoundError("Patient profile not found.");
+        }
+
+        if (patientRecord.id !== parseInt(patientId)) {
+          throw new GraphQLError(
+            "Access Denied: You cannot view other patients' records.",
+            {
+              extensions: { code: "FORBIDDEN" },
+            },
+          );
         }
 
         // Ignore the frontend `patientId` entirely. Use the real database ID!
