@@ -1,6 +1,10 @@
 import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
 
+console.log("====== CLOUDINARY BOOTUP CHECK ======");
+console.log("API KEY EXISTS:", process.env.CLOUDINARY_API_KEY ? "YES" : "NO");
+console.log("=====================================");
+
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
