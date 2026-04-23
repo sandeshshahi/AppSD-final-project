@@ -1,0 +1,48 @@
+# --- THE DEPLOYMENT (What to run) ---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 2 #Run TWO copies of your backend for backup!
+  selector:
+    matchLabels:
+      app: ads-dental-backend
+  template:
+    metadata:
+      labels:
+        app: ads-dental-backend
+    spec:
+      containers:
+        - name: backend
+          # Pull the exact image you just pushed to Docker Hub!
+          image: sandesh4366/adsdental-backend:v2
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: "mysql-service"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USERNAME
+              value: "root"
+            - name: DB_PASSWORD
+              value: "dental123"
+            - name: DB_DATABASE
+              value: "adv_dental_surgeries"
+            - name: JWT_SECRET
+              value: "super_secret_enterprise_key_2026"
+
+---
+# --- THE BACKEND SERVICE  ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ads-dental-backend-service
+spec:
+  type: NodePort # This allows us to access it from our laptop browser
+  selector:
+    app: ads-dental-backend
+  ports:
+    - port: 4000
+      targetPort: 8080
