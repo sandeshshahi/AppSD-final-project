@@ -32,6 +32,18 @@ spec:
               value: "adv_dental_surgeries"
             - name: JWT_SECRET
               value: "super_secret_enterprise_key_2026"
+            # mailtrap
+            - name: MAILTRAP_USER
+              value: "06e6cf92debab8"
+            - name: MAILTRAP_PASS
+              value: "6f397aacb2a953"
+            #cloudinary
+            - name: CLOUDINARY_NAME
+              value: "dp0ngo0eo"
+            - name: CLOUDINARY_API_KEY
+              value: "866986283499743"
+            - name: CLOUDINARY_API_SECRET
+              value: "E1obaGZr8GeULO8k8UvKfx4LCqE"
 
 ---
 # --- THE BACKEND SERVICE  ---

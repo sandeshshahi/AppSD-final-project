@@ -3,3 +3,6 @@ dist/
 .env
 .DS_Store
 coverage/
+
+backend-k8s.yaml
+mysql-k8s.yaml
