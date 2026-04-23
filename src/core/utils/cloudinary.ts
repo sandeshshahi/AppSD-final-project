@@ -2,22 +2,10 @@ import "dotenv/config";
 import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
 
-const cloudName =
-  process.env.CLOUDINARY_CLOUD_NAME ?? process.env.CLOUDINARY_NAME;
-const apiKey = process.env.CLOUDINARY_API_KEY?.trim();
-const apiSecret = process.env.CLOUDINARY_API_SECRET?.trim();
-
-if (!cloudName || !apiKey || !apiSecret) {
-  throw new Error(
-    `Cloudinary env missing. cloud=${!!cloudName}, key=${!!apiKey}, secret=${!!apiSecret}`,
-  );
-}
-
 cloudinary.config({
-  cloud_name: cloudName,
-  api_key: apiKey,
-  api_secret: apiSecret,
-  secure: true,
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export const uploadToCloudinary = (fileBuffer: Buffer): Promise<any> => {

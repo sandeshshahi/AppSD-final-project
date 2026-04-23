@@ -1,14 +1,5 @@
 import nodemailer from "nodemailer";
 
-const host = process.env.MAILTRAP_HOST || "sandbox.smtp.mailtrap.io";
-const port = Number(process.env.MAILTRAP_PORT || 2525);
-const user = process.env.MAILTRAP_USER || process.env.MAILTRAP_USERNAME;
-const pass = process.env.MAILTRAP_PASS || process.env.MAILTRAP_PASSWORD;
-
-if (!user || !pass) {
-  throw new Error("Mailtrap env missing (MAILTRAP_USER/MAILTRAP_PASS).");
-}
-
 // NOTE: In a real app, these credentials go in your .env file!
 const transporter = nodemailer.createTransport({
   host: "sandbox.smtp.mailtrap.io",
